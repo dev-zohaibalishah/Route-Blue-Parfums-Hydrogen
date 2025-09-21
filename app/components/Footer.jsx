@@ -3,7 +3,7 @@ import { Await, NavLink } from 'react-router';
 
 import TextLogo from '~/assets/RBLogo.png';
 import Monogram from '~/assets/RBMonogram.png';
-import Footerimg from '~/assets/Footerimg.png';
+import Footerimg from '../assets/FooterImg.png';
 
 /**
  * @param {FooterProps}
