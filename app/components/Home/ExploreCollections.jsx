@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 
-const ExploreCollections = ({ collections = [] }) => {
+const ExploreCollections = ({ collections = [], allCollections = [] }) => {
   // Collection categories matching Shopify collection handles/titles
   const collectionCategories = [
     { id: 'women', label: 'Women', handle: 'women' },
@@ -10,46 +10,59 @@ const ExploreCollections = ({ collections = [] }) => {
 
   const [activeCollection, setActiveCollection] = useState('women');
 
+  // Use allCollections if provided, otherwise use collections prop
+  const availableCollections = allCollections.length > 0 ? allCollections : collections;
+
   // Find matching Shopify collection and get its products
   const displayProducts = useMemo(() => {
-    // console.log('Collections received:', collections);
-    // console.log('Active collection:', activeCollection);
+    console.log('=== Debug Info ===');
+    console.log('Available collections:', availableCollections?.length || 0);
+    console.log('Active collection:', activeCollection);
     
-    if (!collections || collections.length === 0) {
-    //   console.log('No collections provided');
+    if (availableCollections?.length > 0) {
+      console.log('Collection titles and handles:');
+      availableCollections.forEach(col => {
+        console.log(`- "${col.title}" (handle: "${col.handle}")`);
+      });
+    }
+    
+    if (!availableCollections || availableCollections.length === 0) {
+      console.log('No collections provided');
       return [];
     }
     
     // Find collection that matches the active tab
-    const matchingCollection = collections.find(collection => {
+    const matchingCollection = availableCollections.find(collection => {
       const handle = collection.handle?.toLowerCase();
       const title = collection.title?.toLowerCase();
       const activeHandle = activeCollection.toLowerCase();
       
-    //   console.log(`Checking collection: ${collection.title} (${collection.handle})`);
+      // More comprehensive matching logic
+      const exactHandleMatch = handle === activeHandle;
+      const exactTitleMatch = title === activeHandle;
+      const handleContains = handle?.includes(activeHandle);
+      const titleContains = title?.includes(activeHandle);
+      const pluralHandleMatch = handle === `${activeHandle}s`;
+      const pluralTitleMatch = title === `${activeHandle}s`;
+      const handleWordMatch = handle?.split('-').includes(activeHandle) || handle?.split('_').includes(activeHandle);
+      const titleWordMatch = title?.split(' ').some(word => word.toLowerCase() === activeHandle);
       
-      const matches = handle === activeHandle || 
-                     title === activeHandle || 
-                     handle?.includes(activeHandle) || 
-                     title?.includes(activeHandle) ||
-                     // Also check for plural forms
-                     handle === `${activeHandle}s` ||
-                     title === `${activeHandle}s` ||
-                     // Check if collection handle contains the category
-                     handle?.split('-').includes(activeHandle) ||
-                     handle?.split('_').includes(activeHandle);
+      const matches = exactHandleMatch || exactTitleMatch || handleContains || titleContains || 
+                     pluralHandleMatch || pluralTitleMatch || handleWordMatch || titleWordMatch;
       
-    //   console.log(`Match result for ${collection.title}:`, matches);
+      if (matches) {
+        console.log(`✓ Found match: "${collection.title}" (${collection.handle})`);
+      }
+      
       return matches;
     });
 
     if (!matchingCollection) {
-    //   console.log('No matching collection found for:', activeCollection);
-    //   console.log('Available collections:', collections.map(c => ({ title: c.title, handle: c.handle })));
+      console.log(`❌ No matching collection found for: "${activeCollection}"`);
       return [];
     }
     
-    // console.log('Found matching collection:', matchingCollection.title);
+    console.log(`✅ Using collection: "${matchingCollection.title}"`);
     
     // Handle different product data structures
     let products = [];
@@ -63,11 +76,11 @@ const ExploreCollections = ({ collections = [] }) => {
       }
     }
     
-    // console.log('Products found:', products.length);
+    console.log(`📦 Products found: ${products.length}`);
     
     // Return up to 12 products from the matching collection
     return products.slice(0, 12);
-  }, [collections, activeCollection]);
+  }, [availableCollections, activeCollection]);
 
   // Helper function to truncate description to 10 words
   const truncateDescription = (description, maxWords = 10) => {
@@ -100,6 +113,26 @@ const ExploreCollections = ({ collections = [] }) => {
             discover your signature.
           </p>
         </div>
+
+        {/* Debug Panel - Remove in production */}
+        {/* <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">Debug Info:</h4>
+          <div className="text-sm text-blue-700 space-y-1">
+            <p>Collections available: {availableCollections?.length || 0}</p>
+            <p>Active collection: {activeCollection}</p>
+            <p>Products displaying: {displayProducts.length}</p>
+            {availableCollections?.length > 0 && (
+              <div className="mt-2">
+                <p className="font-medium">Available collections:</p>
+                <ul className="text-xs space-y-1 ml-2">
+                  {availableCollections.map((col, i) => (
+                    <li key={i}>• {col.title} (handle: {col.handle}) - {col.products?.nodes?.length || col.products?.length || 0} products</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div> */}
 
         {/* Collection Filter Menu */}
         <div className="flex flex-wrap items-center justify-between mb-8 md:mb-12 relative z-0">
@@ -301,6 +334,9 @@ const ExploreCollections = ({ collections = [] }) => {
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">
               No products found in the {activeCollection} collection.
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Make sure you have a collection with handle "{activeCollection}" or title containing "{activeCollection}"
             </p>
           </div>
         )}

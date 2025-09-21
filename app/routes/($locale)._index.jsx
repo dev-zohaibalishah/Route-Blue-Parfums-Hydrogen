@@ -32,13 +32,15 @@ export async function loader(args) {
  * @param {LoaderFunctionArgs}
  */
 async function loadCriticalData({context}) {
-  const [{collections}] = await Promise.all([
+  const [{collections}, allCollections] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
+    context.storefront.query(ALL_COLLECTIONS_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
   return {
     featuredCollection: collections.nodes[0],
+    allCollections: allCollections.collections.nodes,
   };
 }
 
@@ -68,7 +70,7 @@ export default function Homepage() {
   return (
     <div className="home">
       <HeroSection />
-      <ExploreCollections />
+      <ExploreCollections allCollections={data.allCollections} />
       
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
@@ -125,6 +127,45 @@ function RecommendedProducts({products}) {
     </div>
   );
 }
+
+// get all collections for the explore collections component
+const ALL_COLLECTIONS_QUERY = `#graphql
+  fragment ExploreCollection on Collection {
+    id
+    title
+    handle
+    products(first: 12) {
+      nodes {
+        id
+        title
+        handle
+        description
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+  query AllCollections($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collections(first: 20) {
+      nodes {
+        ...ExploreCollection
+      }
+    }
+  }
+`;
+
 
 const FEATURED_COLLECTION_QUERY = `#graphql
   fragment FeaturedCollection on Collection {
