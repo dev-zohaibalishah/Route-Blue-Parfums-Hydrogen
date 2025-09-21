@@ -73,7 +73,7 @@ export default function Homepage() {
       <ExploreCollections allCollections={data.allCollections} />
       
       {/* <FeaturedCollection collection={data.featuredCollection} /> */}
-      <RecommendedProducts products={data.recommendedProducts} />
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
     </div>
   );
 }
