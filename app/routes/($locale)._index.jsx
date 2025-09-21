@@ -72,7 +72,7 @@ export default function Homepage() {
       <HeroSection />
       <ExploreCollections allCollections={data.allCollections} />
       
-      <FeaturedCollection collection={data.featuredCollection} />
+      {/* <FeaturedCollection collection={data.featuredCollection} /> */}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );

@@ -3,8 +3,8 @@ import React, { useState, useMemo } from 'react';
 const ExploreCollections = ({ collections = [], allCollections = [] }) => {
   // Collection categories matching Shopify collection handles/titles
   const collectionCategories = [
-    { id: 'women', label: 'Women', handle: 'women' },
     { id: 'men', label: 'Men', handle: 'men' },
+    { id: 'women', label: 'Women', handle: 'women' },
     { id: 'unisex', label: 'Unisex', handle: 'unisex' }
   ];
 
