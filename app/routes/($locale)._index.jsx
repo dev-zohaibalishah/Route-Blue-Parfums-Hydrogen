@@ -3,6 +3,9 @@ import {Suspense} from 'react';
 import {Image} from '@shopify/hydrogen';
 import {ProductItem} from '~/components/ProductItem';
 
+import HeroSection from '~/components/Home/HeroSection';
+import ExploreCollections from '~/components/Home/ExploreCollections';
+
 /**
  * @type {MetaFunction}
  */
@@ -64,7 +67,9 @@ export default function Homepage() {
   const data = useLoaderData();
   return (
     <div className="home">
-      {console.log('data', data)}
+      <HeroSection />
+      <ExploreCollections />
+      
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
