@@ -1,7 +1,8 @@
 import React from 'react'
 import HomeVideo from './ContentLayout/HomeVideo'
-import ImgWithText from './ContentLayout/ImgWithText.client'
-import FullWidthImage from './ContentLayout/FullWidthImage.client';
+import ImgWithText from './ContentLayout/ImgWithText'
+// import FullWidthImage from './ContentLayout/FullWidthImage.client';
+
 
 
 
@@ -61,11 +62,18 @@ const ContentLayout = () => {
       </ImgWithText>
 
       {/* Floral Pattern Divider */}
-      <FullWidthImage
+      {/* <FullWidthImage
         imageSrc="/images/FloralPattern.jpg" 
         imageAlt="Decorative floral pattern"
         className="my-8 h-[50vh]" 
+      /> */}
+      <div className="w-full overflow-hidden">
+      <img
+        src="/images/FloralPattern.jpg" 
+        alt="Decorative floral pattern"
+        className={`w-full object-cover my-8 h-[50vh]`}
       />
+    </div>
 
       <ImgWithText
         layout="image-left"
@@ -99,11 +107,18 @@ const ContentLayout = () => {
         </div>
       </ImgWithText>
 
-      <FullWidthImage
+      {/* <FullWidthImage
         imageSrc="/images/ModalImage.png" 
         imageAlt="Decorative floral pattern"
-        className="my-8 h-[100vh]" 
+        className="my-8 h-[90vh]" 
+      /> */}
+      <div className="w-full overflow-hidden">
+      <img
+        src="/images/ModalImage.png" 
+        alt="Decorative floral pattern"
+        className={`w-full object-cover my-8 h-[90vh]`}
       />
+    </div>
 
     </div>
   )
