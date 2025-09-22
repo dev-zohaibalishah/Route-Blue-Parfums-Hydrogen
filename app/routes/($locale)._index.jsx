@@ -4,6 +4,7 @@ import {Image} from '@shopify/hydrogen';
 import {ProductItem} from '~/components/ProductItem';
 
 import HeroSection from '~/components/Home/HeroSection';
+import ContentLayout from '~/components/Home/ContentLayout.client';
 import ExploreCollections from '~/components/Home/ExploreCollections';
 
 /**
@@ -70,6 +71,7 @@ export default function Homepage() {
   return (
     <div className="home">
       <HeroSection />
+      <ContentLayout />
       <ExploreCollections allCollections={data.allCollections} />
       
       {/* <FeaturedCollection collection={data.featuredCollection} /> */}
