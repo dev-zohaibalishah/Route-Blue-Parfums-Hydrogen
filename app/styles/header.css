@@ -1,0 +1,329 @@
+/* Header Styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+    position: relative;
+    min-height: 60px;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  
+  .header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .logo:hover {
+    color: #666;
+  }
+  
+  /* Mobile hamburger menu */
+  .header-menu-mobile-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .header-menu-mobile-toggle svg {
+    width: 24px;
+    height: 24px;
+    color: black;
+  }
+  
+  /* Desktop navigation - always hidden since we use hamburger menu */
+  .header-menu-desktop {
+    display: none;
+  }
+  
+  /* Header CTAs */
+  .header-ctas {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .header-cta-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: black;
+    transition: color 0.2s ease;
+  }
+  
+  .header-cta-item:hover {
+    color: #666;
+  }
+  
+  .header-cta-item svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Cart specific styles */
+  .cart-toggle {
+    position: relative;
+  }
+  
+  .cart-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    line-height: 1;
+  }
+  
+  /* Aside/Overlay Styles */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .overlay.expanded {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  
+  .close-outside {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  
+  .aside-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 320px;
+    max-width: 90vw;
+    height: 100vh;
+    background: white;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Fix: Ensure slide-in class properly shows the panel */
+  .overlay.expanded .aside-panel {
+    transform: translateX(0);
+  }
+  
+  .aside-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+    background: #f8f8f8;
+    min-height: 60px;
+    flex-shrink: 0;
+  }
+  
+  .aside-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .aside-header .close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .aside-header .close:hover {
+    color: black;
+    background: #e5e5e5;
+    border-radius: 4px;
+  }
+  
+  .aside-content {
+    flex: 1;
+    padding: 0;
+    overflow-y: auto;
+    background: white;
+  }
+  
+  /* Mobile Navigation Styles */
+  .mobile-navigation-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+    background: white;
+  }
+  
+  .mobile-nav-item {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    border-bottom: 1px solid #e5e5e5;
+    transition: all 0.2s ease;
+    background: white;
+  }
+  
+  .mobile-nav-item:hover {
+    color: #666;
+    background: #f8f8f8;
+  }
+  
+  .collections-section {
+    border-bottom: 1px solid #e5e5e5;
+    background: white;
+  }
+  
+  .collections-title {
+    display: block;
+    padding: 1rem 1.5rem 0.5rem 1.5rem;
+    font-weight: bold;
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f8f8f8;
+    margin: 0;
+  }
+  
+  .collection-item {
+    padding: 0.75rem 1.5rem 0.75rem 2rem;
+    font-size: 0.95rem;
+    background: white;
+  }
+  
+  .contact-item {
+    margin-top: auto;
+    border-bottom: none;
+    font-weight: bold;
+    color: #333;
+    background: white;
+  }
+  
+  /* Desktop Styles */
+  @media (min-width: 768px) {
+    /* Keep hamburger menu visible on desktop */
+    .header-menu-mobile-toggle {
+      display: flex;
+    }
+    
+    /* Desktop navigation stays hidden */
+    .header-menu-desktop {
+      display: none;
+    }
+    
+    .header-center {
+      position: static;
+      transform: none;
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .header {
+      padding: 0.75rem 1rem;
+    }
+    
+    .header-ctas {
+      gap: 0.5rem;
+    }
+    
+    .header-cta-item {
+      padding: 0.25rem;
+    }
+    
+    .logo {
+      font-size: 1.25rem;
+    }
+  }
+  
+  /* Reset button styles */
+  .reset {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+  }

@@ -12,6 +12,15 @@ import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
+
+
+
+import HomeVideo from '~/components/Home/ContentLayout/HomeVideo'
+import ImgWithText from '~/components/Home/ContentLayout/ImgWithText';
+import ImgWithText2 from '~/components/Home/ContentLayout/ImgWithText2';
+import ExploreCollections from '~/components/Home/ExploreCollections';
+
+
 /**
  * @type {MetaFunction<typeof loader>}
  */
@@ -106,6 +115,7 @@ export default function Product() {
   const {title, descriptionHtml} = product;
 
   return (
+    <>
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
       <div className="product-main">
@@ -144,6 +154,34 @@ export default function Product() {
         }}
       />
     </div>
+
+
+        <HomeVideo />
+        <ImgWithText />
+        <div className="w-full overflow-hidden">
+        <img
+          src="/images/FloralPattern.jpg" 
+          alt="Decorative floral pattern"
+          className={`w-full object-cover my-8 h-[50vh]`}
+        />
+      </div>
+
+      <ImgWithText2 />
+
+        <div className="w-full overflow-hidden">
+        <img
+          src="/images/ModalImage.png" 
+          alt="Decorative floral pattern"
+          className={`w-full object-cover my-8 h-[90vh]`}
+        />
+      </div>
+
+      
+
+
+
+
+    </>
   );
 }
 

@@ -5,9 +5,6 @@ import {ProductItem} from '~/components/ProductItem';
 
 import HeroSection from '~/components/Home/HeroSection';
 // import ContentLayout from '~/components/Home/ContentLayout';
-import HomeVideo from '~/components/Home/ContentLayout/HomeVideo'
-import ImgWithText from '~/components/Home/ContentLayout/ImgWithText';
-import ImgWithText2 from '~/components/Home/ContentLayout/ImgWithText2';
 
 import ExploreCollections from '~/components/Home/ExploreCollections';
 
@@ -15,7 +12,7 @@ import ExploreCollections from '~/components/Home/ExploreCollections';
  * @type {MetaFunction}
  */
 export const meta = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [{title: 'Route Bleue Parfums | Home'}];
 };
 
 /**
@@ -76,26 +73,6 @@ export default function Homepage() {
     <div className="home">
       <HeroSection />
       {/* <ContentLayout /> */}
-      <HomeVideo />
-      <ImgWithText />
-      <div className="w-full overflow-hidden">
-      <img
-        src="/images/FloralPattern.jpg" 
-        alt="Decorative floral pattern"
-        className={`w-full object-cover my-8 h-[50vh]`}
-      />
-    </div>
-
-    <ImgWithText2 />
-
-      <div className="w-full overflow-hidden">
-      <img
-        src="/images/ModalImage.png" 
-        alt="Decorative floral pattern"
-        className={`w-full object-cover my-8 h-[90vh]`}
-      />
-    </div>
-
 
 
       <ExploreCollections allCollections={data.allCollections} />
