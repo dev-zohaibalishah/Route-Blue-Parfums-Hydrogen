@@ -268,7 +268,7 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
       <div className="header-center">
         <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
           {/*<strong className="logo">{shop.name}</strong>*/}
-          <img src='/public/images/RBLogo.png' alt={shop.name}/>
+          <img src='/images/RBLogo.png' alt={shop.name}/>
 
         </NavLink>
       </div>

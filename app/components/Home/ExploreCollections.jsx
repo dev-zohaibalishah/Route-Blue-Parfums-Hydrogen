@@ -5,18 +5,38 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
   const collectionCategories = [
     { id: 'women', label: 'Women', handle: 'women' },
     { id: 'men', label: 'Men', handle: 'men' },
-    { id: 'unisex', label: 'Unisex', handle: 'unisex' }
+    { id: 'unisex', label: 'Unisex', handle: 'unisex' },
+    { id: 'all', label: 'Show all', handle: 'all' }
   ];
 
-  const [activeCollection, setActiveCollection] = useState('women');
+  const [activeCollection, setActiveCollection] = useState('all');
 
   // Use allCollections if provided, otherwise use collections prop
   const availableCollections = allCollections.length > 0 ? allCollections : collections;
 
-  // Find matching Shopify collection and get its products
+  // Get products based on active collection
   const displayProducts = useMemo(() => {
     if (!availableCollections || availableCollections.length === 0) {
       return [];
+    }
+    
+    // If "Show all" is selected, get products from all collections
+    if (activeCollection === 'all') {
+      const allProducts = [];
+      availableCollections.forEach(collection => {
+        let products = [];
+        if (collection.products) {
+          if (collection.products.nodes) {
+            products = collection.products.nodes;
+          } else if (Array.isArray(collection.products)) {
+            products = collection.products;
+          } else if (collection.products.edges) {
+            products = collection.products.edges.map(edge => edge.node);
+          }
+        }
+        allProducts.push(...products);
+      });
+      return allProducts.slice(0, 12); // Limit to 12 products
     }
     
     // Find collection that matches the active tab
@@ -25,18 +45,12 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
       const title = collection.title?.toLowerCase();
       const activeHandle = activeCollection.toLowerCase();
       
-      // More comprehensive matching logic
-      const exactHandleMatch = handle === activeHandle;
-      const exactTitleMatch = title === activeHandle;
-      const handleContains = handle?.includes(activeHandle);
-      const titleContains = title?.includes(activeHandle);
-      const pluralHandleMatch = handle === `${activeHandle}s`;
-      const pluralTitleMatch = title === `${activeHandle}s`;
-      const handleWordMatch = handle?.split('-').includes(activeHandle) || handle?.split('_').includes(activeHandle);
-      const titleWordMatch = title?.split(' ').some(word => word.toLowerCase() === activeHandle);
-      
-      return exactHandleMatch || exactTitleMatch || handleContains || titleContains || 
-             pluralHandleMatch || pluralTitleMatch || handleWordMatch || titleWordMatch;
+      return handle === activeHandle || 
+             title === activeHandle || 
+             handle?.includes(activeHandle) || 
+             title?.includes(activeHandle) ||
+             handle === `${activeHandle}s` ||
+             title === `${activeHandle}s`;
     });
 
     if (!matchingCollection) {
@@ -55,53 +69,50 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
       }
     }
     
-    // Return up to 12 products from the matching collection
     return products.slice(0, 12);
   }, [availableCollections, activeCollection]);
 
-  // Helper function to truncate description to 10 words
-  const truncateDescription = (description, maxWords = 10) => {
+  // Helper function to truncate description
+  const truncateDescription = (description, maxWords = 12) => {
     if (!description) return '';
     const words = description.split(' ');
     if (words.length <= maxWords) return description;
     return words.slice(0, maxWords).join(' ') + '...';
   };
 
-  // Format price helper
+  // Format price helper (not used in current card design but kept for completeness)
   const formatPrice = (price) => {
     if (!price) return '$0.00';
     if (typeof price === 'string') return price;
     if (price.amount && price.currencyCode) {
-      return `${price.currencyCode === 'USD' ? '$' : ''}${price.amount}`;
+      const symbol = price.currencyCode === 'USD' ? '$' : price.currencyCode + ' ';
+      return `${symbol}${parseFloat(price.amount).toFixed(1)}`;
     }
     return `$${price}`;
   };
 
   return (
-    <section className="py-8 md:py-12 lg:py-16 bg-gray-50">
+    <section className="py-12 lg:py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
-        <div className="mb-8 md:mb-10">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-normal text-gray-900 mb-1">
-            Explore all seven worlds of fragrance,
-          </h2>
-          <p className="text-xl md:text-2xl lg:text-3xl font-normal text-gray-700">
-            discover your signature.
-          </p>
-        </div>
+        {/* Header with Navigation */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-12 lg:mb-16">
+          {/* Header Text */}
+          <div className="mb-8 lg:mb-0">
+            <h2 className="text-2xl lg:text-3xl font-normal text-gray-900 leading-tight">
+              Explore all seven worlds of fragrance, discover your signature.
+            </h2>
+          </div>
 
-        {/* Collection Filter Menu */}
-        <div className="flex flex-wrap items-center justify-between mb-8 md:mb-12 relative z-0">
-          {/* Collection Tabs */}
-          <div className="flex gap-4 md:gap-8">
+          {/* Collection Filter Menu - Top Right */}
+          <div className="flex gap-6 lg:gap-8 lg:mt-1">
             {collectionCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCollection(category.id)}
-                className={`text-sm md:text-base font-medium transition-colors duration-200 relative z-0 ${
+                className={`text-base font-medium transition-colors duration-200 whitespace-nowrap ${
                   activeCollection === category.id
-                    ? 'text-gray-900'
+                    ? 'text-gray-900 underline underline-offset-4'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -109,191 +120,114 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
               </button>
             ))}
           </div>
-
-          {/* Show All Button */}
-          <a
-            href="/collections"
-            className="text-sm md:text-base font-medium text-gray-900 underline hover:text-gray-600 transition-colors duration-200 relative z-0"
-          >
-            Show all
-          </a>
         </div>
 
         {/* Products Grid */}
         {displayProducts.length > 0 ? (
-          <>
-            {/* Desktop Layout - 4 columns for first row, 3 for second */}
-            <div className="hidden lg:block">
-              {/* First Row - 4 products */}
-              <div className="grid grid-cols-4 gap-6 xl:gap-8 mb-8">
-                {displayProducts.slice(0, 4).map((product) => (
-                  <div key={product.id} className="group">
-                    {/* Product Image Container */}
-                    <div className="relative mb-4">
-                      <div className="aspect-[3/4] bg-white rounded-lg overflow-hidden shadow-md">
-                        <img
-                          src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
-                          alt={product.title}
-                          className="w-full h-full object-contain p-4"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
+          // Main Grid Container
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+            
+            {/* First row - show up to 4 products on desktop, 2 on tablet, 1 on mobile */}
+            {displayProducts.slice(0, 4).map((product) => (
+              <a
+                key={product.id}
+                href={`/products/${product.handle}`}
+                className="group cursor-pointer block"
+              >
+                {/* Product Card - Row 1 Design */}
+                <div className="bg-white hover:shadow-sm transition-shadow duration-200 overflow-hidden border border-gray-100 relative">
+                  {/* Product Image Container */}
+                  <div className="bg-gray-50">
+                    <img
+                      src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
+                      alt={product.title}
+                      className="w-full h-[400px] sm:[340px] object-cover group-hover:scale-102 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
 
-                    {/* Product Info */}
-                    <div className="text-center">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        {product.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-3 leading-relaxed">
-                        {truncateDescription(product.description)}
-                      </p>
-                      <p className="text-base font-medium text-gray-900 mb-4">
-                        {formatPrice(product.priceRange?.minVariantPrice || product.price)}
-                      </p>
-                      <a
-                        href={`/products/${product.handle}`}
-                        className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors duration-200"
-                      >
-                        <span className="mr-2">Discover</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </a>
+                  {/* Product Info */}
+                  <div className="p-6 text-center absolute top-0 w-full"> {/* Added w-full here */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {product.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                      {truncateDescription(product.description)}
+                    </p>
+                  </div>
+                    
+                  {/* Discover Button */}
+                  <div className="pb-6 sm:pb-2 absolute bottom-0 left-[50%] translate-x-[-50%]">
+                    <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors duration-200 group-hover:bg-blue-700">
+                      <span className="mr-1">Discover</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Second Row - 3 products centered */}
-              {displayProducts.length > 4 && (
-                <div className="grid grid-cols-3 gap-6 xl:gap-8 max-w-5xl mx-auto">
-                  {displayProducts.slice(4, 7).map((product) => (
-                    <div key={product.id} className="group">
-                      <div className="relative mb-4">
-                        <div className="aspect-[3/4] bg-white rounded-lg overflow-hidden shadow-md">
-                          <img
-                            src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
-                            alt={product.title}
-                            className="w-full h-full object-contain p-4"
-                            loading="lazy"
-                          />
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                          {product.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-3 leading-relaxed">
-                          {truncateDescription(product.description)}
-                        </p>
-                        <p className="text-base font-medium text-gray-900 mb-4">
-                          {formatPrice(product.priceRange?.minVariantPrice || product.price)}
-                        </p>
-                        <a
-                          href={`/products/${product.handle}`}
-                          className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors duration-200"
-                        >
-                          <span className="mr-2">Discover</span>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </a>
-                      </div>
-                    </div>
-                  ))}
                 </div>
-              )}
-            </div>
+              </a>
+            ))}
+            
+            {/* Second Row Products (Product 5, 6, 7) - NOW MATCHES FIRST ROW DESIGN */}
+            {/* The second row is now rendered as part of the main 4-column grid for consistency */}
+            {displayProducts.slice(4, 8).map((product) => ( // Note: Changed to slice(4, 8) to show the next 4 products (5th to 8th)
+              <a
+                key={product.id}
+                href={`/products/${product.handle}`}
+                className="group cursor-pointer block hidden lg:block" // Keep hidden lg:block to ensure it only shows on desktop in the 4-column layout
+              >
+                {/* Product Card - Row 2 (Now using Row 1 Design) */}
+                <div className="bg-white hover:shadow-sm transition-shadow duration-200 overflow-hidden border border-gray-100 relative">
+                  {/* Product Image Container */}
+                  <div className="bg-gray-50">
+                    <img
+                      src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
+                      alt={product.title}
+                      // **MATCHING IMAGE HEIGHT AND TRANSITION**
+                      className="w-full h-[400px] sm:[340px] object-cover group-hover:scale-102 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
 
-            {/* Tablet Layout - 2 columns */}
-            <div className="hidden md:block lg:hidden">
-              <div className="grid grid-cols-2 gap-6 md:gap-8">
-                {displayProducts.slice(0, 6).map((product) => (
-                  <div key={product.id} className="group">
-                    <div className="relative mb-4">
-                      <div className="aspect-[3/4] bg-white rounded-lg overflow-hidden shadow-md">
-                        <img
-                          src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
-                          alt={product.title}
-                          className="w-full h-full object-contain p-4"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <h3 className="text-xl font-medium text-gray-900 mb-3">
-                        {product.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                        {truncateDescription(product.description)}
-                      </p>
-                      <p className="text-lg font-medium text-gray-900 mb-6">
-                        {formatPrice(product.priceRange?.minVariantPrice || product.price)}
-                      </p>
-                      <a
-                        href={`/products/${product.handle}`}
-                        className="inline-flex items-center justify-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded transition-colors duration-200"
-                      >
-                        <span className="mr-2">Discover</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </a>
+                  {/* Product Info - MATCHING PLACEMENT AND CONTENT */}
+                  <div className="p-6 text-center absolute top-0 w-full"> {/* Added w-full and absolute top-0 */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {product.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                      {truncateDescription(product.description)}
+                    </p>
+                  </div>
+                    
+                  {/* Discover Button - MATCHING PLACEMENT AND DESIGN */}
+                  <div className="pb-6 sm:pb-2 absolute bottom-0 left-[50%] translate-x-[-50%]"> {/* Moved out of Product Info div and matched classes */}
+                    <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors duration-200 group-hover:bg-blue-700">
+                      <span className="mr-1">Discover</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Mobile Layout - 1 column */}
-            <div className="block md:hidden">
-              <div className="space-y-8">
-                {displayProducts.slice(0, 4).map((product) => (
-                  <div key={product.id} className="group text-center">
-                    <div className="relative mb-6">
-                      <div className="aspect-[3/4] bg-white rounded-lg overflow-hidden shadow-md max-w-xs mx-auto">
-                        <img
-                          src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
-                          alt={product.title}
-                          className="w-full h-full object-contain p-6"
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-medium text-gray-900 mb-3">
-                        {product.title}
-                      </h3>
-                      <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-sm mx-auto">
-                        {truncateDescription(product.description)}
-                      </p>
-                      <p className="text-lg font-medium text-gray-900 mb-6">
-                        {formatPrice(product.priceRange?.minVariantPrice || product.price)}
-                      </p>
-                      <a
-                        href={`/products/${product.handle}`}
-                        className="inline-flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded transition-colors duration-200"
-                      >
-                        <span className="mr-2">Discover</span>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
+                </div>
+              </a>
+            ))}
+          </div>
         ) : (
           /* Empty State */
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">
-              No products found in the {activeCollection} collection.
+              {activeCollection === 'all' 
+                ? "No products found." 
+                : `No products found in the ${activeCollection} collection.`}
             </p>
           </div>
         )}
+
+        {/* Removed the separate 'Second Row' div and merged it into the main grid. */}
+        {/* This makes the grid layout consistent (all 8 products, 4 per row, use the same styling). */}
+        {/* Products 5-8 will be hidden on non-desktop screens due to the initial grid setup. */}
+        
       </div>
     </section>
   );

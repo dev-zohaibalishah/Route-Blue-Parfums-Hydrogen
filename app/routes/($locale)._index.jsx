@@ -302,7 +302,7 @@ function VideoWelcomeOverlay({ onSkip }) {
         onLoadedData={handleVideoLoad}
         onError={() => setIsVideoLoaded(true)} // Show fallback if video fails
       >
-        <source src="/public/images/Welcome.mp4" type="video/mp4" />
+        <source src="/images/Welcome.mp4" type="video/mp4" />
       </video>
 
       {/* Fallback background if video doesn't load */}
@@ -316,8 +316,8 @@ function VideoWelcomeOverlay({ onSkip }) {
         {/* <div className="text-2xl font-bold tracking-wider">RB</div>
         <div className="text-xs tracking-[0.2em] opacity-90 font-light">ROUTE BLEUE</div>
         <div className="text-xs tracking-[0.1em] opacity-70 font-light">PARFUMS</div> */}
-        <img className='w-12 pb-4' src='/public/images/RBMonogram.png' alt='Raute Bleue Parfums' />
-        <img src='/public/images/RBLogo.png' alt='Raute Bleue Parfums' />
+        <img className='w-12 pb-4' src='/images/RBMonogram.png' alt='Raute Bleue Parfums' />
+        <img src='/images/RBLogo.png' alt='Raute Bleue Parfums' />
       </div>
 
       {/* Top Right Skip Button */}
