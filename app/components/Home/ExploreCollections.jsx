@@ -36,7 +36,24 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
         }
         allProducts.push(...products);
       });
-      return allProducts.slice(0, 12); // Limit to 12 products
+
+      // --- START: Duplicate Removal Logic ---
+      const productIds = new Set();
+      const uniqueProducts = [];
+
+      // Iterate through all collected products and only add unique IDs
+      allProducts.forEach(product => {
+        // Assuming 'id' is a unique identifier (like Shopify GID)
+        if (product.id && !productIds.has(product.id)) {
+          productIds.add(product.id);
+          uniqueProducts.push(product);
+        }
+      });
+      
+      // --- END: Duplicate Removal Logic ---
+
+      // Return the unique products, limited to 12
+      return uniqueProducts.slice(0, 12); 
     }
     
     // Find collection that matches the active tab
@@ -100,7 +117,9 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
           {/* Header Text */}
           <div className="mb-8 lg:mb-0">
             <h2 className="text-2xl lg:text-3xl font-normal text-gray-900 leading-tight">
-              Explore all seven worlds of fragrance, discover your signature.
+              Explore all seven worlds of fragrance,
+              <br className="hidden sm:block" />
+              <span className="text-gray-700"> discover your signature.</span>
             </h2>
           </div>
 
@@ -147,7 +166,7 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-6 text-center absolute top-0 w-full"> {/* Added w-full here */}
+                  <div className="p-6 text-center absolute top-0 w-full">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {product.title}
                     </h3>
@@ -169,29 +188,27 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
               </a>
             ))}
             
-            {/* Second Row Products (Product 5, 6, 7) - NOW MATCHES FIRST ROW DESIGN */}
-            {/* The second row is now rendered as part of the main 4-column grid for consistency */}
-            {displayProducts.slice(4, 8).map((product) => ( // Note: Changed to slice(4, 8) to show the next 4 products (5th to 8th)
+            {/* Second Row Products (Product 5, 6, 7, 8) */}
+            {displayProducts.slice(4, 8).map((product) => (
               <a
                 key={product.id}
                 href={`/products/${product.handle}`}
-                className="group cursor-pointer block hidden lg:block" // Keep hidden lg:block to ensure it only shows on desktop in the 4-column layout
+                className="group cursor-pointer block hidden lg:block"
               >
-                {/* Product Card - Row 2 (Now using Row 1 Design) */}
+                {/* Product Card - Row 2 (Using Row 1 Design) */}
                 <div className="bg-white hover:shadow-sm transition-shadow duration-200 overflow-hidden border border-gray-100 relative">
                   {/* Product Image Container */}
                   <div className="bg-gray-50">
                     <img
                       src={product.featuredImage?.url || product.images?.[0]?.url || '/images/placeholder-perfume.jpg'}
                       alt={product.title}
-                      // **MATCHING IMAGE HEIGHT AND TRANSITION**
                       className="w-full h-[400px] sm:[340px] object-cover group-hover:scale-102 transition-transform duration-300"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Product Info - MATCHING PLACEMENT AND CONTENT */}
-                  <div className="p-6 text-center absolute top-0 w-full"> {/* Added w-full and absolute top-0 */}
+                  <div className="p-6 text-center absolute top-0 w-full">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {product.title}
                     </h3>
@@ -201,7 +218,7 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
                   </div>
                     
                   {/* Discover Button - MATCHING PLACEMENT AND DESIGN */}
-                  <div className="pb-6 sm:pb-2 absolute bottom-0 left-[50%] translate-x-[-50%]"> {/* Moved out of Product Info div and matched classes */}
+                  <div className="pb-6 sm:pb-2 absolute bottom-0 left-[50%] translate-x-[-50%]">
                     <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors duration-200 group-hover:bg-blue-700">
                       <span className="mr-1">Discover</span>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,10 +240,6 @@ const ExploreCollections = ({ collections = [], allCollections = [] }) => {
             </p>
           </div>
         )}
-
-        {/* Removed the separate 'Second Row' div and merged it into the main grid. */}
-        {/* This makes the grid layout consistent (all 8 products, 4 per row, use the same styling). */}
-        {/* Products 5-8 will be hidden on non-desktop screens due to the initial grid setup. */}
         
       </div>
     </section>
