@@ -261,12 +261,15 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
       {/* Mobile hamburger menu - left side */}
       <div className="header-left">
         <HeaderMenuMobileToggle />
+        <p className='!pl-3 hidden lg:block md:block'>Menu</p>
       </div>
 
       {/* Logo - center */}
       <div className="header-center">
         <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-          <strong className="logo">{shop.name}</strong>
+          {/*<strong className="logo">{shop.name}</strong>*/}
+          <img src='/public/images/RBLogo.png' alt={shop.name}/>
+
         </NavLink>
       </div>
 

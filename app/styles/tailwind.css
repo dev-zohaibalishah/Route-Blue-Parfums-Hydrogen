@@ -2,5 +2,9 @@
  * Configure Tailwind v4 in this file using CSS variables and directives:
  * https://tailwindcss.com/docs/v4-beta#css-first-configuration
  */
-
+ @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+ @theme {
+    --font-dancing: 'Dancing Script', cursive; 
+  }
+ 
 @import 'tailwindcss';

@@ -109,7 +109,7 @@ import {createContext, useContext, useEffect, useState} from 'react';
 import '../styles/header.css'
 
 /**
- * A side bar component with Overlay that slides from the left
+ * A side bar component with Overlay that can slide from left or right
  * @example
  * <Aside type="search" heading="SEARCH">
  *   <input type="search" />
@@ -124,6 +124,10 @@ import '../styles/header.css'
 export function Aside({children, heading, type}) {
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
+
+  // Determine slide direction based on type
+  const slideFromRight = type === 'cart' || type === 'search';
+  const panelClasses = `aside-panel ${slideFromRight ? 'slide-from-right' : 'slide-from-left'} ${expanded ? 'slide-in' : ''}`;
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -149,7 +153,7 @@ export function Aside({children, heading, type}) {
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
-      <aside className="aside-panel">
+      <aside className={panelClasses}>
         <header className="aside-header">
           <h3>{heading}</h3>
           <button
