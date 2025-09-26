@@ -21,10 +21,13 @@ export default function ImageWithText({
     return fallbackPath;
   };
 
-  // Helper function to render rich text content
+  // Helper function to render rich text content - FIXED
   const renderContent = (textData, fallbackContent) => {
-    if (textData?.value) {
-      // If it's rich text, render as HTML
+    // Debug logging
+    console.log('Text data received:', textData);
+    
+    // Check if textData has value property (metafield)
+    if (textData && textData.value && textData.value.trim()) {
       return (
         <div 
           className="prose max-w-none"
@@ -33,8 +36,8 @@ export default function ImageWithText({
       );
     }
     
-    if (typeof textData === 'string') {
-      // If it's plain text, render directly
+    // Check if textData is a direct string
+    if (typeof textData === 'string' && textData.trim()) {
       return (
         <div className="prose max-w-none">
           <div dangerouslySetInnerHTML={{ __html: textData }} />
@@ -42,9 +45,16 @@ export default function ImageWithText({
       );
     }
     
-    // Fallback content
+    // If no valid text data, return fallback content
     return fallbackContent;
   };
+
+  // Check if we have any metafield content
+  const hasSection1Content = (section1Text?.value && section1Text.value.trim()) || 
+                             (typeof section1Text === 'string' && section1Text.trim());
+  
+  const hasSection2Content = (section2Text?.value && section2Text.value.trim()) || 
+                             (typeof section2Text === 'string' && section2Text.trim());
 
   // Default content for section 1
   const defaultSection1Content = (
@@ -103,7 +113,11 @@ export default function ImageWithText({
           />
         </div>
         <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center">
-          {renderContent(section1Text, defaultSection1Content)}
+          {/* Only show default content if no metafield content exists */}
+          {hasSection1Content 
+            ? renderContent(section1Text, null)
+            : defaultSection1Content
+          }
         </div>
       </div>
 
@@ -121,7 +135,11 @@ export default function ImageWithText({
           />
         </div>
         <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center">
-          {renderContent(section2Text, defaultSection2Content)}
+          {/* Only show default content if no metafield content exists */}
+          {hasSection2Content 
+            ? renderContent(section2Text, null)
+            : defaultSection2Content
+          }
         </div>
       </div>
     </>

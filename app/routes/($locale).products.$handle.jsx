@@ -336,6 +336,16 @@ const PRODUCT_QUERY = `#graphql
 /** @template T @typedef {import('react-router').MetaFunction<T>} MetaFunction */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
 
+
+
+
+
+
+
+
+
+
+
 // import {useLoaderData} from 'react-router';
 // import {
 //   getSelectedProductOptions,

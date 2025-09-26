@@ -187,6 +187,16 @@ const HomeVideo = ({ videoData, thumbnailUrl }) => {
 
 export default HomeVideo;
 
+
+
+
+
+
+
+
+
+
+
 // import React, { useEffect, useRef } from 'react';
 
 // import HomeVideoSrc from '~/assets/HomePage/HomeVideo.mp4';
