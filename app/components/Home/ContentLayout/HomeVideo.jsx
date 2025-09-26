@@ -103,9 +103,12 @@ const HomeVideo = ({ videoData, thumbnailUrl }) => {
         }}
       >
         {/* Render all available video sources */}
-        {videoSources.map((source, index) => (
+        
+          <source key={index} src={source.url} type="video/mp4" />
+        
+        {/* {videoSources.map((source, index) => (
           <source key={index} src={source.url} type={source.type} />
-        ))}
+        ))} */}
         Your browser does not support the video tag.
       </video>
 
