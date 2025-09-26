@@ -129,6 +129,12 @@ export default function Product() {
 
   // Get the product video from metafields - now properly handling the reference
   const productVideo = getMetafieldValue('custom', 'product_video');
+  
+  // Get info section data
+  const info1Image = getMetafieldValue('custom', 'info1_img');
+  const info1Text = getMetafieldValue('custom', 'info1_text');
+  const info2Image = getMetafieldValue('custom', 'info2_img');
+  const info2Text = getMetafieldValue('custom', 'info2_text');
 
   return (
     <>
@@ -174,7 +180,12 @@ export default function Product() {
       {/* Dynamic Video Section - Pass the video object (not just URL) */}
       <HomeVideo videoData={productVideo} />
       
-      <ImgWithText />
+      <ImgWithText 
+        section1Image={info1Image}
+        section1Text={info1Text}
+        section2Image={info2Image}
+        section2Text={info2Text}
+      />
       <div className="w-full overflow-hidden">
         <img
           src="/images/FloralPattern.jpg" 
@@ -244,7 +255,11 @@ const PRODUCT_FRAGMENT = `#graphql
     encodedVariantExistence
     encodedVariantAvailability
     metafields(identifiers: [
-      {namespace: "custom", key: "product_video"}
+      {namespace: "custom", key: "product_video"},
+      {namespace: "custom", key: "info1_img"},
+      {namespace: "custom", key: "info1_text"},
+      {namespace: "custom", key: "info2_img"},
+      {namespace: "custom", key: "info2_text"}
     ]) {
       namespace
       key
@@ -256,6 +271,8 @@ const PRODUCT_FRAGMENT = `#graphql
           image {
             url
             altText
+            width
+            height
           }
         }
         ... on Video {

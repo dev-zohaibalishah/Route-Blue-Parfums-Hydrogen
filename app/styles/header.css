@@ -11,6 +11,7 @@
   border-bottom: 1px solid #e5e5e5;
   position: relative;
   min-height: 60px;
+  z-index: 1100; /* Higher z-index to stay above glassmorphic overlay */
 }
 
 .header-left {
@@ -128,14 +129,38 @@
   line-height: 1;
 }
 
-/* Aside/Overlay Styles */
+/* Glassmorphic Overlay - sits between background content and aside panels */
+.glassmorphic-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 999; /* Between main content and aside panels */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+}
+
+.glassmorphic-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Main overlay for close functionality */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: transparent; /* Remove dark background since we have glassmorphic overlay */
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
@@ -167,18 +192,22 @@
   width: 320px;
   max-width: 90vw;
   height: 100vh;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 1002;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease-in-out;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Left side slide (mobile menu) */
 .aside-panel.slide-from-left {
   left: 0;
   transform: translateX(-100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .aside-panel.slide-from-left.slide-in {
@@ -189,7 +218,8 @@
 .aside-panel.slide-from-right {
   right: 0;
   transform: translateX(100%);
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.1);
 }
 
 .aside-panel.slide-from-right.slide-in {
@@ -201,8 +231,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid #e5e5e5;
-  background: #f8f8f8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(248, 248, 248, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   min-height: 60px;
   flex-shrink: 0;
 }
@@ -215,8 +247,9 @@
 }
 
 .aside-header .close {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -227,28 +260,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
 
 .aside-header .close:hover {
   color: black;
-  background: #e5e5e5;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .aside-content {
   flex: 1;
   padding: 0;
   overflow-y: auto;
-  background: white;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
-/* Mobile Navigation Styles */
+/* Mobile Navigation Styles with glassmorphism */
 .mobile-navigation-wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 100%;
-  background: white;
+  background: transparent;
 }
 
 .mobile-nav-item {
@@ -257,19 +295,21 @@
   text-decoration: none;
   color: black;
   font-weight: 500;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .mobile-nav-item:hover {
-  color: #666;
-  background: #f8f8f8;
+  color: #333;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .collections-section {
-  border-bottom: 1px solid #e5e5e5;
-  background: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
 }
 
 .collections-title {
@@ -280,14 +320,16 @@
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #f8f8f8;
+  background: rgba(248, 248, 248, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   margin: 0;
 }
 
 .collection-item {
   padding: 0.75rem 1.5rem 0.75rem 2rem;
   font-size: 0.95rem;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .contact-item {
@@ -295,7 +337,7 @@
   border-bottom: none;
   font-weight: bold;
   color: #333;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Desktop Styles */

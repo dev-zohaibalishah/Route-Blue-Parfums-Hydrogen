@@ -109,7 +109,7 @@ import {createContext, useContext, useEffect, useState} from 'react';
 import '../styles/header.css'
 
 /**
- * A side bar component with Overlay that can slide from left or right
+ * A side bar component with Overlay that can slide from left or right with glassmorphic background
  * @example
  * <Aside type="search" heading="SEARCH">
  *   <input type="search" />
@@ -147,28 +147,36 @@ export function Aside({children, heading, type}) {
   }, [close, expanded]);
 
   return (
-    <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
-      role="dialog"
-    >
-      <button className="close-outside" onClick={close} />
-      <aside className={panelClasses}>
-        <header className="aside-header">
-          <h3>{heading}</h3>
-          <button
-            className="close reset"
-            onClick={close}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </header>
-        <main className="aside-content">
-          {expanded && children}
-        </main>
-      </aside>
-    </div>
+    <>
+      {/* Glassmorphic overlay - appears behind the aside panel but above main content */}
+      <div
+        className={`glassmorphic-overlay ${expanded ? 'active' : ''}`}
+      />
+      
+      {/* Main overlay for close functionality */}
+      <div
+        aria-modal
+        className={`overlay ${expanded ? 'expanded' : ''}`}
+        role="dialog"
+      >
+        <button className="close-outside" onClick={close} />
+        <aside className={panelClasses}>
+          <header className="aside-header">
+            <h3>{heading}</h3>
+            <button
+              className="close reset"
+              onClick={close}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </header>
+          <main className="aside-content">
+            {expanded && children}
+          </main>
+        </aside>
+      </div>
+    </>
   );
 }
 
