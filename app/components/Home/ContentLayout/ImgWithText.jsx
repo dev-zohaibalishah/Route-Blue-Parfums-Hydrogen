@@ -21,31 +21,43 @@ export default function ImageWithText({
     return fallbackPath;
   };
 
-  // Helper function to render rich text content - FIXED
+  // Helper function to render rich text content
   const renderContent = (textData, fallbackContent) => {
-    // Debug logging
     console.log('Text data received:', textData);
-    
-    // Check if textData has value property (metafield)
-    if (textData && textData.value && textData.value.trim()) {
-      return (
-        <div 
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: textData.value }}
-        />
-      );
+
+    try {
+      // If it's a metafield richtext object
+      if (textData && textData.value) {
+        const parsed = JSON.parse(textData.value);
+
+        const extractText = (node) => {
+          if (node.type === 'text') return node.value;
+          if (node.children) return node.children.map(extractText).join('');
+          return '';
+        };
+
+        const content = extractText(parsed);
+
+        return (
+          <div className="prose max-w-none">
+            <p>{content}</p>
+          </div>
+        );
+      }
+
+      // If it's a plain string
+      if (typeof textData === 'string' && textData.trim()) {
+        return (
+          <div className="prose max-w-none">
+            <p>{textData}</p>
+          </div>
+        );
+      }
+    } catch (err) {
+      console.error('Error parsing metafield rich text:', err);
     }
-    
-    // Check if textData is a direct string
-    if (typeof textData === 'string' && textData.trim()) {
-      return (
-        <div className="prose max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: textData }} />
-        </div>
-      );
-    }
-    
-    // If no valid text data, return fallback content
+
+    // Fallback
     return fallbackContent;
   };
 
@@ -107,13 +119,11 @@ export default function ImageWithText({
             alt={section1Image?.reference?.image?.altText || "Section 1 image"}
             className="w-full h-auto object-cover rounded-md shadow-lg"
             onError={(e) => {
-              // Fallback to default image if metafield image fails to load
               e.target.src = '/images/ManWithPerfume.jpg';
             }}
           />
         </div>
         <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center">
-          {/* Only show default content if no metafield content exists */}
           {hasSection1Content 
             ? renderContent(section1Text, null)
             : defaultSection1Content
@@ -129,13 +139,11 @@ export default function ImageWithText({
             alt={section2Image?.reference?.image?.altText || "Section 2 image"}
             className="w-full h-auto object-cover rounded-md shadow-lg"
             onError={(e) => {
-              // Fallback to default image if metafield image fails to load
               e.target.src = '/images/FragranceIngredients.png';
             }}
           />
         </div>
         <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center">
-          {/* Only show default content if no metafield content exists */}
           {hasSection2Content 
             ? renderContent(section2Text, null)
             : defaultSection2Content
