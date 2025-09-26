@@ -5,7 +5,6 @@ import HomeVideoSrc from '~/assets/HomePage/HomeVideo.mp4';
 import HomeVideoThumbnail from '~/assets/HomePage/HomeVideoThumbnail.png';
 
 
-// Define the component to accept the productVideo prop
 const HomeVideo = ({ productVideo }) => {
   const videoRef = useRef(null);
 
@@ -21,7 +20,7 @@ const HomeVideo = ({ productVideo }) => {
         url = reference.sources.find(source => source.mimeType === 'video/mp4')?.url || reference.sources[0].url;
         poster = reference.previewImage?.url || poster;
       } else if (reference.__typename === 'MediaImage') {
-        // If an image is set instead of a video, there is no video URL
+        // If an image is set instead of a video, use it as a poster, but set url to null
         poster = reference.image?.url || poster;
         url = null; 
       }
@@ -34,16 +33,15 @@ const HomeVideo = ({ productVideo }) => {
     // Attempt to play the video as soon as the component mounts
     if (videoRef.current && videoUrl) { // Only try to play if we have a video URL
       videoRef.current.play().catch(error => {
-        // Autoplay was prevented, usually because of browser policy.
         console.log("Autoplay was prevented:", error);
       });
     }
-  }, [videoUrl]); // Re-run effect if video URL changes
+  }, [videoUrl]);
 
-  // Don't render the video section if we couldn't find a video URL (e.g., only an image was set and we default to null)
-  // If you prefer to show the fallback static video when the metafield is empty, remove this check.
-  // We keep it to ensure it only renders if there's a valid video source (local fallback or metafield).
+  // If we have no video URL (not even the local fallback), don't render.
   if (!videoUrl) {
+    // If you'd rather show the fallback image instead of nothing, 
+    // you could render an <img> tag here using the posterUrl.
     return null;
   }
   
@@ -64,13 +62,7 @@ const HomeVideo = ({ productVideo }) => {
         {/* Use dynamic video source */}
         <source src={videoUrl} type="video/mp4" />
         
-        {/* You should ideally use the actual mimeType from the reference.sources array. 
-            For simplicity and common use, we assume video/mp4, but a robust solution 
-            would map the fetched mimeType: */}
-        {/* {productVideo?.reference?.__typename === 'Video' && productVideo.reference.sources.map((source, index) => (
-            <source key={index} src={source.url} type={source.mimeType} />
-        ))} */}
-
+        {/* Fallback text */}
         Your browser does not support the video tag.
       </video>
 
@@ -81,7 +73,6 @@ const HomeVideo = ({ productVideo }) => {
 };
 
 export default HomeVideo;
-
 
 // import React, { useEffect, useRef } from 'react';
 

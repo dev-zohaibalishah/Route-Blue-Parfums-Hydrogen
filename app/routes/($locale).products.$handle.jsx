@@ -66,6 +66,8 @@ async function loadCriticalData({context, params, request}) {
   ]);
 
   if (!product?.id) {
+    // Log error to help debug the 404
+    console.error(`Product not found for handle: ${handle}`); 
     throw new Response(null, {status: 404});
   }
 
@@ -110,8 +112,8 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  // Destructure the productVideo metafield reference
-  const {title, descriptionHtml, productVideo} = product; 
+  // Destructure title, descriptionHtml, and the new productVideo metafield
+  const {title, descriptionHtml, productVideo} = product;
 
   return (
     <>
@@ -174,11 +176,6 @@ export default function Product() {
           className={`w-full object-cover my-8 h-[90vh]`}
         />
       </div>
-
-      
-
-
-
 
     </>
   );
