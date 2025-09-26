@@ -21,18 +21,17 @@ export default function ImageWithText({
     return fallbackPath;
   };
 
-  // Helper function to render rich text content
+  // Helper function to render rich text content as plain text
   const renderContent = (textData, fallbackContent) => {
     console.log('Text data received:', textData);
 
     try {
-      // If it's a metafield richtext object
       if (textData && textData.value) {
         const parsed = JSON.parse(textData.value);
 
         const extractText = (node) => {
           if (node.type === 'text') return node.value;
-          if (node.children) return node.children.map(extractText).join('');
+          if (node.children) return node.children.map(extractText).join(' ');
           return '';
         };
 
@@ -45,7 +44,6 @@ export default function ImageWithText({
         );
       }
 
-      // If it's a plain string
       if (typeof textData === 'string' && textData.trim()) {
         return (
           <div className="prose max-w-none">
@@ -57,18 +55,15 @@ export default function ImageWithText({
       console.error('Error parsing metafield rich text:', err);
     }
 
-    // Fallback
     return fallbackContent;
   };
 
-  // Check if we have any metafield content
   const hasSection1Content = (section1Text?.value && section1Text.value.trim()) || 
                              (typeof section1Text === 'string' && section1Text.trim());
   
   const hasSection2Content = (section2Text?.value && section2Text.value.trim()) || 
                              (typeof section2Text === 'string' && section2Text.trim());
 
-  // Default content for section 1
   const defaultSection1Content = (
     <div className="prose max-w-none">
       <h2 className="text-3xl sm:text-4xl font-semibold mb-4">Truly the Flavour of Nostalgia.</h2>
@@ -88,7 +83,6 @@ export default function ImageWithText({
     </div>
   );
 
-  // Default content for section 2
   const defaultSection2Content = (
     <div className="prose max-w-none">
       <h2 className="text-3xl sm:text-4xl font-semibold mb-4">Fragrance Notes</h2>
