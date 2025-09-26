@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import HomeVideoSrc from '~/assets/HomePage/HomeVideo.mp4';
 import HomeVideoThumbnail from '~/assets/HomePage/HomeVideoThumbnail.png';
 
-const HomeVideo = ({ videoUrl, thumbnailUrl }) => {
+const HomeVideo = ({ videoData, thumbnailUrl }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -15,38 +15,71 @@ const HomeVideo = ({ videoUrl, thumbnailUrl }) => {
         console.log("Autoplay was prevented:", error);
       });
     }
-  }, [videoUrl]); // Re-run when videoUrl changes
+  }, [videoData]); // Re-run when videoData changes
 
   // Function to get video source - either from metafield or fallback
   const getVideoSource = () => {
-    // If videoUrl is provided from metafield, use it
-    if (videoUrl) {
-      // Handle different types of video URLs from Shopify
-      if (typeof videoUrl === 'string') {
-        return videoUrl;
+    // If videoData is provided from metafield
+    if (videoData) {
+      // Handle Shopify Video object with sources array
+      if (videoData.sources && videoData.sources.length > 0) {
+        // Return the first available source (usually MP4)
+        return videoData.sources[0].url;
       }
-      // Handle if it's a Shopify Video object
-      if (videoUrl.sources && videoUrl.sources.length > 0) {
-        return videoUrl.sources[0].url;
+      
+      // Handle if it's a direct string URL
+      if (typeof videoData === 'string') {
+        return videoData;
       }
     }
+    
     // Fallback to default video
     return HomeVideoSrc;
   };
 
   // Function to get thumbnail source
   const getThumbnailSource = () => {
+    // Check if videoData has a preview image
+    if (videoData?.previewImage?.url) {
+      return videoData.previewImage.url;
+    }
+    
+    // Check for passed thumbnailUrl prop
     if (thumbnailUrl) {
       return thumbnailUrl;
     }
+    
+    // Fallback to default thumbnail
     return HomeVideoThumbnail;
   };
 
-  const videoSource = getVideoSource();
+  // Function to get all video sources for multiple formats
+  const getVideoSources = () => {
+    const sources = [];
+    
+    if (videoData?.sources) {
+      videoData.sources.forEach(source => {
+        sources.push({
+          url: source.url,
+          type: source.mimeType || 'video/mp4'
+        });
+      });
+    } else {
+      // Add default source
+      sources.push({
+        url: getVideoSource(),
+        type: 'video/mp4'
+      });
+    }
+    
+    return sources;
+  };
+
+  const videoSources = getVideoSources();
   const thumbnailSource = getThumbnailSource();
 
-  // If no video source is available, don't render the component
-  if (!videoSource) {
+  // If no video sources are available, don't render the component
+  if (videoSources.length === 0 || !videoSources[0].url) {
     return null;
   }
 
@@ -54,7 +87,7 @@ const HomeVideo = ({ videoUrl, thumbnailUrl }) => {
     <div className="relative w-full overflow-hidden">
       <video
         ref={videoRef}
-        key={videoSource} // Force re-render when video changes
+        key={videoSources[0].url} // Force re-render when video changes
         className="w-full object-cover"
         style={{
           height: '100vh', // Default height for desktop
@@ -69,14 +102,10 @@ const HomeVideo = ({ videoUrl, thumbnailUrl }) => {
           // Optionally handle error state here
         }}
       >
-        <source src={videoSource} type="video/mp4" />
-        {/* Add WebM source if available */}
-        {videoUrl?.sources?.find(source => source.mimeType === 'video/webm') && (
-          <source 
-            src={videoUrl.sources.find(source => source.mimeType === 'video/webm').url} 
-            type="video/webm" 
-          />
-        )}
+        {/* Render all available video sources */}
+        {videoSources.map((source, index) => (
+          <source key={index} src={source.url} type={source.type} />
+        ))}
         Your browser does not support the video tag.
       </video>
 

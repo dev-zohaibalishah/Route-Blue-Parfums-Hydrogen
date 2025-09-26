@@ -110,16 +110,25 @@ export default function Product() {
 
   const {title, descriptionHtml} = product;
 
-  // Extract metafield data
+  // Extract metafield data with proper handling for video references
   const getMetafieldValue = (namespace, key) => {
     const metafield = product.metafields?.find(
       (field) => field?.namespace === namespace && field?.key === key
     );
-    return metafield?.value || null;
+    
+    if (!metafield) return null;
+    
+    // If it's a file reference (like video), return the reference object
+    if (metafield.reference) {
+      return metafield.reference;
+    }
+    
+    // Otherwise return the value
+    return metafield.value || null;
   };
 
-  // Get the product video from metafields
-  const productVideoUrl = getMetafieldValue('custom', 'product_video');
+  // Get the product video from metafields - now properly handling the reference
+  const productVideo = getMetafieldValue('custom', 'product_video');
 
   return (
     <>
@@ -162,8 +171,8 @@ export default function Product() {
         />
       </div>
 
-      {/* Dynamic Video Section - Pass the metafield video URL */}
-      <HomeVideo videoUrl={productVideoUrl} />
+      {/* Dynamic Video Section - Pass the video object (not just URL) */}
+      <HomeVideo videoData={productVideo} />
       
       <ImgWithText />
       <div className="w-full overflow-hidden">
@@ -255,6 +264,9 @@ const PRODUCT_FRAGMENT = `#graphql
             url
             mimeType
           }
+          previewImage {
+            url
+          }
         }
       }
     }
@@ -306,7 +318,6 @@ const PRODUCT_QUERY = `#graphql
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('react-router').MetaFunction<T>} MetaFunction */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
-
 
 // import {useLoaderData} from 'react-router';
 // import {
