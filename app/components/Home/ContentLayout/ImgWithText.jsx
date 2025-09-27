@@ -28,20 +28,15 @@ export default function ImageWithText({
     try {
       if (textData && textData.value) {
         const parsed = JSON.parse(textData.value);
+        const content = parsed?.children?.[0]?.children?.[0]?.value || '';
 
-        const extractText = (node) => {
-          if (node.type === 'text') return node.value;
-          if (node.children) return node.children.map(extractText).join(' ');
-          return '';
-        };
-
-        const content = extractText(parsed);
-
-        return (
-          <div className="prose max-w-none">
-            <p>{content}</p>
-          </div>
-        );
+        if (content) {
+          return (
+            <div className="prose max-w-none">
+              <p>{content}</p>
+            </div>
+          );
+        }
       }
 
       if (typeof textData === 'string' && textData.trim()) {
